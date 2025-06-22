@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meeting Assistant</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Meeting Assistant</h1>
+            <div class="status-indicator" id="statusIndicator">
+                <span class="status-dot" id="statusDot"></span>
+                <span id="statusText">Ready</span>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="control-panel">
+                <div class="recording-controls">
+                    <button id="recordBtn" class="btn btn-primary">
+                        <span class="btn-icon">🎤</span>
+                        Start Recording
+                    </button>
+                    <button id="overlayBtn" class="btn btn-secondary">
+                        <span class="btn-icon">👁️</span>
+                        Toggle Overlay
+                    </button>
+                    <button id="clearBtn" class="btn btn-danger">
+                        <span class="btn-icon">🗑️</span>
+                        Clear Context
+                    </button>
+                </div>
+
+                <div class="shortcuts-info">
+                    <h3>Keyboard Shortcuts</h3>
+                    <div class="shortcut-list">
+                        <div class="shortcut-item">
+                            <kbd>Ctrl+Shift+R</kbd>
+                            <span>Toggle Recording</span>
+                        </div>
+                        <div class="shortcut-item">
+                            <kbd>Ctrl+Shift+O</kbd>
+                            <span>Toggle Overlay</span>
+                        </div>
+                        <div class="shortcut-item">
+                            <kbd>Ctrl+Shift+H</kbd>
+                            <span>Emergency Hide Overlay</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-area">
+                <div class="transcription-panel">
+                    <h2>Live Transcription</h2>
+                    <div id="transcriptionContent" class="content-box">
+                        <p class="placeholder">Transcribed speech will appear here...</p>
+                    </div>
+                </div>
+
+                <div class="response-panel">
+                    <h2>AI Insights</h2>
+                    <div id="responseContent" class="content-box">
+                        <p class="placeholder">AI responses and insights will appear here...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-panel">
+                <h2>Settings</h2>
+                <div class="settings-grid">
+                    <div class="setting-group">
+                        <h3>Audio</h3>
+                        <label>
+                            Language:
+                            <select id="languageSelect">
+                                <option value="en-US">English (US)</option>
+                                <option value="en-GB">English (UK)</option>
+                                <option value="es-ES">Spanish</option>
+                                <option value="fr-FR">French</option>
+                                <option value="de-DE">German</option>
+                            </select>
+                        </label>
+                        <label>
+                            Silence Threshold (ms):
+                            <input type="range" id="silenceThreshold" min="1000" max="5000" value="2000">
+                            <span id="silenceValue">2000</span>
+                        </label>
+                    </div>
+
+                    <div class="setting-group">
+                        <h3>AI Response</h3>
+                        <label>
+                            Response Delay (ms):
+                            <input type="range" id="responseDelay" min="1000" max="10000" value="3000">
+                            <span id="delayValue">3000</span>
+                        </label>
+                        <label>
+                            Max Response Length:
+                            <input type="range" id="maxTokens" min="100" max="1000" value="500">
+                            <span id="tokensValue">500</span>
+                        </label>
+                    </div>
+
+                    <div class="setting-group">
+                        <h3>Overlay</h3>
+                        <label>
+                            Position:
+                            <select id="overlayPosition">
+                                <option value="top-right">Top Right</option>
+                                <option value="top-left">Top Left</option>
+                                <option value="bottom-right">Bottom Right</option>
+                                <option value="bottom-left">Bottom Left</option>
+                                <option value="center">Center</option>
+                            </select>
+                        </label>
+                        <label>
+                            Opacity:
+                            <input type="range" id="overlayOpacity" min="0.3" max="1" step="0.1" value="0.9">
+                            <span id="opacityValue">0.9</span>
+                        </label>
+                        <label>
+                            <input type="checkbox" id="autoHide" checked>
+                            Auto-hide after 10 seconds
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <div class="stats">
+                <span>Context Length: <span id="contextLength">0</span></span>
+                <span>•</span>
+                <span>Version 1.0.0</span>
+            </div>
+        </footer>
+    </div>
+
+    <div id="errorModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Error</h2>
+            <p id="errorMessage"></p>
+        </div>
+    </div>
+
+    <script src="renderer.js"></script>
+</body>
+</html>

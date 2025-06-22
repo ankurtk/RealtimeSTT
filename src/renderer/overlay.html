@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meeting Assistant Overlay</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            height: 100vh;
+            overflow: hidden;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .overlay-container {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 1rem;
+        }
+
+        .overlay-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .overlay-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #3498db;
+        }
+
+        .overlay-timestamp {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .overlay-content {
+            flex: 1;
+            overflow-y: auto;
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+
+        .response-item {
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            border-left: 3px solid #27ae60;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .response-timestamp {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 0.5rem;
+        }
+
+        .response-text {
+            color: white;
+        }
+
+        .placeholder {
+            color: rgba(255, 255, 255, 0.5);
+            font-style: italic;
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Scrollbar styling */
+        .overlay-content::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .overlay-content::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+        }
+
+        .overlay-content::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 2px;
+        }
+
+        .overlay-content::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Fade in/out animations */
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .fade-out {
+            animation: fadeOut 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="overlay-container">
+        <div class="overlay-header">
+            <div class="overlay-title">🤖 AI Assistant</div>
+            <div class="overlay-timestamp" id="currentTime"></div>
+        </div>
+        <div class="overlay-content" id="overlayContent">
+            <div class="placeholder">AI insights will appear here...</div>
+        </div>
+    </div>
+
+    <script>
+        class OverlayRenderer {
+            constructor() {
+                this.responses = [];
+                this.overlayContent = document.getElementById('overlayContent');
+                this.currentTime = document.getElementById('currentTime');
+                
+                this.setupEventListeners();
+                this.updateTime();
+                this.startTimeUpdater();
+            }
+
+            setupEventListeners() {
+                window.overlayAPI.onDisplayResponse((event, data) => {
+                    this.addResponse(data.text, data.timestamp);
+                });
+            }
+
+            addResponse(text, timestamp) {
+                const responseData = {
+                    text: text,
+                    timestamp: new Date(timestamp).toLocaleTimeString()
+                };
+                
+                this.responses.push(responseData);
+                
+                // Limit stored responses
+                if (this.responses.length > 10) {
+                    this.responses = this.responses.slice(-8);
+                }
+                
+                this.updateDisplay();
+            }
+
+            updateDisplay() {
+                if (this.responses.length === 0) {
+                    this.overlayContent.innerHTML = '<div class="placeholder">AI insights will appear here...</div>';
+                    return;
+                }
+                
+                const html = this.responses.map(item => `
+                    <div class="response-item">
+                        <div class="response-timestamp">${item.timestamp}</div>
+                        <div class="response-text">${this.escapeHtml(item.text)}</div>
+                    </div>
+                `).join('');
+                
+                this.overlayContent.innerHTML = html;
+                this.overlayContent.scrollTop = this.overlayContent.scrollHeight;
+            }
+
+            updateTime() {
+                this.currentTime.textContent = new Date().toLocaleTimeString();
+            }
+
+            startTimeUpdater() {
+                setInterval(() => {
+                    this.updateTime();
+                }, 1000);
+            }
+
+            escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+        }
+
+        // Initialize overlay renderer
+        document.addEventListener('DOMContentLoaded', () => {
+            new OverlayRenderer();
+        });
+    </script>
+</body>
+</html>
